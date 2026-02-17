@@ -13,18 +13,24 @@ public class DAOUtility {
         JsonArray records = new JsonArray();
         
         try {
-        
             if (rs != null) {
+                ResultSetMetaData rsmd = rs.getMetaData();
+                int columnCount = rsmd.getColumnCount();
 
-                // INSERT YOUR CODE HERE
-
+                while (rs.next()) {
+                    JsonObject record = new JsonObject();
+                    for (int i = 1; i <= columnCount; i++) {
+                        String key = rsmd.getColumnName(i);
+                        Object value = rs.getObject(i);
+                        // Standardize value as String for the JSON object
+                        record.put(key, (value == null) ? "" : value.toString());
+                    }
+                    records.add(record);
+                }
             }
-            
+        } catch (Exception e) {
+            e.printStackTrace(); 
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        
         return Jsoner.serialize(records);
         
     }
